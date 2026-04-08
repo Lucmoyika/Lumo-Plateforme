@@ -1,0 +1,14 @@
+{
+  "name": "Lumo Plateforme",
+  "short_name": "Lumo",
+  "description": "Plateforme tout-en-un pour l'Afrique - Éducation, Emploi, Commerce, Paiements",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e1b4b",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon"}
+  ],
+  "categories": ["education", "business", "shopping"]
+}
