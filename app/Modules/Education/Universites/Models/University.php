@@ -43,14 +43,26 @@ class University extends Model implements HasMedia
         return $this->hasMany(Faculty::class);
     }
 
-    public function departments(): HasMany
+    public function departments(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
-        return $this->hasManyThrough(Department::class, Faculty::class);
+        return $this->hasManyThrough(
+            Department::class,
+            Faculty::class,
+            'university_id', // FK on faculties -> universities
+            'faculty_id',    // FK on departments -> faculties
+        );
     }
 
-    public function programs(): HasMany
+    /**
+     * Returns programs belonging to all departments of this university.
+     * Three-level deep: University -> Faculty -> Department -> Program.
+     */
+    public function programs(): \Illuminate\Database\Eloquent\Builder
     {
-        return $this->hasManyThrough(Program::class, Department::class, 'faculty_id', 'department_id');
+        return Program::whereIn(
+            'department_id',
+            $this->departments()->select('departments.id'),
+        );
     }
 
     public function students(): HasMany

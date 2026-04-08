@@ -43,7 +43,7 @@ class Order extends Model
 
         static::creating(function (Order $order): void {
             if (empty($order->order_number)) {
-                $order->order_number = 'ORD-' . strtoupper(Str::random(4)) . '-' . now()->format('YmdHis');
+                $order->order_number = 'ORD-' . strtoupper(Str::random(8)) . '-' . now()->format('YmdHis');
             }
         });
     }
