@@ -17,4 +17,4 @@ Route::get('/videos', function () { return view('videos.index'); })->name('video
 Route::get('/profile', function () { return view('profile.index'); })->name('profile');
 Route::get('/settings', function () { return view('settings.index'); })->name('settings');
 Route::get('/admin/audit-logs', function () { return view('admin.audit-logs'); })->name('admin.audit-logs');
-Route::fallback(function () { return view('layouts.app'); });
+Route::fallback(function () { abort(404); });
