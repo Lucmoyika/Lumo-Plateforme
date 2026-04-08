@@ -200,18 +200,18 @@
                         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                                 <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">Kouassi Ange</td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="16" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="18" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="15" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="14" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="16" aria-label="Note de Français — Kouassi Ange" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="18" aria-label="Note de Mathématiques — Kouassi Ange" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="15" aria-label="Note de Sciences — Kouassi Ange" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="14" aria-label="Note d'Histoire — Kouassi Ange" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
                                 <td class="px-3 py-2 text-center font-semibold text-green-600">15.75</td>
                             </tr>
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
                                 <td class="px-3 py-2 font-medium text-gray-900 dark:text-white">Adjoua Marie</td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="14" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="12" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="16" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
-                                <td class="px-3 py-2 text-center"><input type="number" value="15" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="14" aria-label="Note de Français — Adjoua Marie" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="12" aria-label="Note de Mathématiques — Adjoua Marie" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="16" aria-label="Note de Sciences — Adjoua Marie" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
+                                <td class="px-3 py-2 text-center"><input type="number" value="15" aria-label="Note d'Histoire — Adjoua Marie" class="w-14 text-center border border-gray-200 dark:border-gray-600 rounded px-1 py-0.5 text-sm dark:bg-gray-700"></td>
                                 <td class="px-3 py-2 text-center font-semibold text-green-600">14.25</td>
                             </tr>
                         </tbody>

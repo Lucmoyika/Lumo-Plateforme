@@ -71,7 +71,7 @@
                 <thead class="bg-gray-50 dark:bg-gray-750 border-b border-gray-100 dark:border-gray-700">
                     <tr>
                         <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-5 py-3 w-8">
-                            <input type="checkbox" class="rounded">
+                            <input type="checkbox" class="rounded" aria-label="Sélectionner tous les utilisateurs">
                         </th>
                         <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-5 py-3">Utilisateur</th>
                         <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-5 py-3 hidden md:table-cell">Rôle</th>

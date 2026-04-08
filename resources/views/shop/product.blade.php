@@ -178,7 +178,7 @@
     </div>
 
     <!-- Toast -->
-    <div x-show="showToast" x-transition class="fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center gap-2">
+    <div x-show="showToast" x-transition role="alert" aria-live="polite" class="fixed bottom-6 right-6 bg-green-600 text-white px-5 py-3 rounded-2xl shadow-2xl z-50 flex items-center gap-2">
         ✅ Produit ajouté au panier !
     </div>
 </div>
