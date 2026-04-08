@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      x-data="{ dark: localStorage.getItem('dark') === 'true', sidebarOpen: false }"
+      x-data="{ dark: localStorage.getItem('dark') === 'true', sidebarOpen: false, notifOpen: false, notifCount: 3 }"
       x-init="$watch('dark', val => localStorage.setItem('dark', val))"
       :class="{ 'dark': dark }">
 <head>
@@ -42,10 +42,45 @@
                     <a href="/chat" class="text-indigo-100 hover:text-white hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium transition">💬 Chat</a>
                     <a href="/wallet" class="text-indigo-100 hover:text-white hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium transition">💳 Wallet</a>
                     <a href="/videos" class="text-indigo-100 hover:text-white hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium transition">🎥 Vidéos</a>
+                    <a href="/logistics" class="text-indigo-100 hover:text-white hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium transition">🚚 Logistique</a>
+                    <a href="/analytics" class="text-indigo-100 hover:text-white hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium transition">📊 Analytique</a>
                 </div>
 
                 <!-- Right side -->
                 <div class="flex items-center space-x-3">
+                    <!-- Notification Bell -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open; notifCount = 0" class="relative text-white p-2 rounded-full hover:bg-indigo-700 transition">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <span x-show="notifCount > 0" x-text="notifCount"
+                                :aria-label="notifCount + ' nouvelles notifications'"
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-bold animate-bounce"></span>
+                        </button>
+                        <div x-show="open" x-transition @click.away="open = false"
+                            class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                                <h3 class="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                                <a href="/notifications" class="text-xs text-indigo-600 hover:underline">Voir tout</a>
+                            </div>
+                            <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                                <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                                    <p class="text-sm text-gray-800 dark:text-gray-200">💼 Nouvelle offre d'emploi chez TechAfrique</p>
+                                    <p class="text-xs text-gray-500 mt-1">Il y a 5 min</p>
+                                </div>
+                                <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                                    <p class="text-sm text-gray-800 dark:text-gray-200">🛒 Votre commande #1042 a été expédiée</p>
+                                    <p class="text-xs text-gray-500 mt-1">Il y a 1h</p>
+                                </div>
+                                <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                                    <p class="text-sm text-gray-800 dark:text-gray-200">🏫 Nouvel élève inscrit à votre école</p>
+                                    <p class="text-xs text-gray-500 mt-1">Il y a 3h</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <button @click="dark = !dark" class="text-white p-2 rounded-full hover:bg-indigo-700 transition">
                         <svg x-show="!dark" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
@@ -69,6 +104,12 @@
             <a href="/chat" class="block text-indigo-100 hover:text-white py-2 text-sm">💬 Chat</a>
             <a href="/wallet" class="block text-indigo-100 hover:text-white py-2 text-sm">💳 Wallet</a>
             <a href="/videos" class="block text-indigo-100 hover:text-white py-2 text-sm">🎥 Vidéos</a>
+            <a href="/logistics" class="block text-indigo-100 hover:text-white py-2 text-sm">🚚 Logistique</a>
+            <a href="/analytics" class="block text-indigo-100 hover:text-white py-2 text-sm">📊 Analytique</a>
+            <a href="/notifications" class="block text-indigo-100 hover:text-white py-2 text-sm">🔔 Notifications</a>
+            <a href="/admin" class="block text-indigo-100 hover:text-white py-2 text-sm">⚙️ Admin</a>
+            <a href="/profile" class="block text-indigo-100 hover:text-white py-2 text-sm">👤 Profil</a>
+            <a href="/settings" class="block text-indigo-100 hover:text-white py-2 text-sm">⚙️ Paramètres</a>
         </div>
     </nav>
 

@@ -17,4 +17,18 @@ Route::get('/videos', function () { return view('videos.index'); })->name('video
 Route::get('/profile', function () { return view('profile.index'); })->name('profile');
 Route::get('/settings', function () { return view('settings.index'); })->name('settings');
 Route::get('/admin/audit-logs', function () { return view('admin.audit-logs'); })->name('admin.audit-logs');
+Route::get('/logistics', function () { return view('logistics.index'); })->name('logistics');
+Route::get('/analytics', function () { return view('analytics.index'); })->name('analytics');
+Route::get('/admin', function () { return view('admin.index'); })->name('admin');
+Route::get('/admin/users', function () { return view('admin.users'); })->name('admin.users');
+Route::get('/jobs/1', function () { return view('jobs.show'); })->name('jobs.show');
+Route::get('/companies/1', function () { return view('companies.show'); })->name('companies.show');
+Route::get('/schools/1', function () { return view('schools.show'); })->name('schools.show');
+Route::get('/universities/1', function () { return view('universities.show'); })->name('universities.show');
+Route::get('/shop/cart', function () { return view('shop.cart'); })->name('shop.cart');
+Route::get('/shop/checkout', function () { return view('shop.checkout'); })->name('shop.checkout');
+Route::get('/shop/orders', function () { return view('shop.orders'); })->name('shop.orders');
+Route::get('/shop/products/1', function () { return view('shop.product'); })->name('shop.product');
+Route::get('/videos/1', function () { return view('videos.show'); })->name('videos.show');
+Route::get('/notifications', function () { return view('notifications.index'); })->name('notifications');
 Route::fallback(function () { abort(404); });
