@@ -13,13 +13,27 @@ class StudentRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    public function paginateBySchool(int $schoolId, int $perPage = 15): LengthAwarePaginator
+    public function paginateBySchool(int $schoolId, int $perPage = 15, ?string $academicYear = null, bool $includeArchived = false): LengthAwarePaginator
     {
-        return $this->model->where('school_id', $schoolId)->with(['user', 'class'])->paginate($perPage);
+        $query = $this->model
+            ->where('school_id', $schoolId)
+            ->with(['user', 'class_']);
+
+        if ($academicYear) {
+            $query->whereHas('class_', function ($q) use ($academicYear) {
+                $q->where('academic_year', $academicYear);
+            });
+        }
+
+        if (!$includeArchived) {
+            $query->whereNull('archived_at');
+        }
+
+        return $query->paginate($perPage);
     }
 
     public function getGrades(int $studentId): \Illuminate\Database\Eloquent\Collection
     {
-        return $this->findOrFail($studentId)->grades()->with(['subject'])->get();
+        return $this->findOrFail($studentId)->grades()->get();
     }
 }

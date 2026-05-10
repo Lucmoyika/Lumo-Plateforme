@@ -1,0 +1,744 @@
+{
+  "module": "Education/Ecoles",
+  "workspace": "d:\\Lumo-Plateforme",
+  "description": "Module complet de gestion des écoles, enseignants, élèves, présences, notes et plannings",
+  "lastUpdated": "2026-05-08",
+  
+  "controllers": {
+    "SchoolController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/SchoolController.php",
+      "actions": [
+        "index() - Liste les écoles avec filtres (level, city, status, search)",
+        "show(id) - Affiche une école spécifique avec director et classes"
+      ],
+      "related_model": "School",
+      "service": "SchoolService"
+    },
+    "StudentController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/StudentController.php",
+      "actions": [
+        "index(school_id?, per_page?, academic_year?, include_archived?) - Liste des élèves",
+        "show(id) - Affiche un élève avec user, class_, school"
+      ],
+      "related_model": "Student",
+      "service": "StudentService"
+    },
+    "TeacherController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/TeacherController.php",
+      "actions": [
+        "index(school_id?, per_page?, academic_year?, include_archived?) - Liste des enseignants",
+        "show(id) - Affiche un enseignant avec user, school, classes"
+      ],
+      "related_model": "Teacher",
+      "service": "TeacherService"
+    },
+    "SchoolClassController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/SchoolClassController.php",
+      "actions": [
+        "index(school_id?, academic_year?, include_archived?) - Liste les classes",
+        "show(id) - Affiche une classe avec school, teacher, students"
+      ],
+      "related_model": "SchoolClass",
+      "service": "SchoolClassService"
+    },
+    "AttendanceController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/AttendanceController.php",
+      "actions": [
+        "index() - Compatibilité GET /attendance",
+        "store() - Compatibilité POST /attendance",
+        "record(records) - Enregistrer présence pour un ou plusieurs élèves",
+        "getByClass(class_id, date?) - Obtenir présences par classe"
+      ],
+      "related_model": "Attendance",
+      "service": "AttendanceService"
+    },
+    "GradeController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/GradeController.php",
+      "actions": [
+        "index(class_id?, student_id?, term?, period?) - Liste les notes",
+        "getByStudent(student_id, term?) - Notes d'un élève"
+      ],
+      "related_model": "Grade",
+      "service": "GradeService"
+    },
+    "SchoolYearController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/SchoolYearController.php",
+      "actions": [
+        "index(school, academic_year?) - Récupère les années scolaires avec résumé",
+        "archive(school, academic_year) - Archive une année scolaire complète"
+      ]
+    },
+    "SchoolTaskController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/SchoolTaskController.php",
+      "actions": [
+        "index(school, status?, priority?, assigned_to?, search?) - Liste les tâches",
+        "show(school, task) - Affiche une tâche",
+        "store(school) - Créer une tâche",
+        "update(school, task) - Modifier une tâche"
+      ],
+      "related_model": "SchoolTask",
+      "service": "SchoolTaskService"
+    },
+    "SchoolMemberPermissionController": {
+      "file": "app/Modules/Education/Ecoles/Controllers/SchoolMemberPermissionController.php",
+      "actions": [
+        "index(school) - Liste les membres et les délégations de permissions",
+        "store(school, user) - Créer une délégation de permission"
+      ],
+      "related_model": "SchoolPermissionDelegation"
+    }
+  },
+
+  "models": {
+    "School": {
+      "file": "app/Modules/Education/Ecoles/Models/School.php",
+      "table": "schools",
+      "description": "Représente une école",
+      "fillable": [
+        "name", "level_types", "address", "city", "province", "phone", 
+        "email", "website", "logo", "description", "director_id", "status"
+      ],
+      "relations": {
+        "director": "BelongsTo -> User (director_id)",
+        "classes": "HasMany -> SchoolClass",
+        "teachers": "HasMany -> Teacher",
+        "students": "HasMany -> Student",
+        "tasks": "HasMany -> SchoolTask"
+      },
+      "scopes": [
+        "active() - Écoles actives",
+        "byLevel(level) - Écoles par niveau (primaire, secondaire, humanites)"
+      ],
+      "features": [
+        "Soft deletes",
+        "Media library (pour logo)",
+        "level_types stocké en JSON"
+      ]
+    },
+
+    "Student": {
+      "file": "app/Modules/Education/Ecoles/Models/Student.php",
+      "table": "students",
+      "description": "Représente un élève",
+      "fillable": [
+        "user_id", "school_id", "class_id", "student_number", "enrollment_date",
+        "parent_id", "guardian_name", "guardian_phone", "guardian_email", "status", "archived_at"
+      ],
+      "relations": {
+        "user": "BelongsTo -> User",
+        "school": "BelongsTo -> School",
+        "class_": "BelongsTo -> SchoolClass (class_id)",
+        "parent": "BelongsTo -> User (parent_id)",
+        "grades": "HasMany -> Grade",
+        "attendances": "HasMany -> Attendance"
+      },
+      "features": [
+        "Lié à un utilisateur User",
+        "Peut avoir un parent lié à un autre User",
+        "Support d'archive (archived_at)"
+      ]
+    },
+
+    "Teacher": {
+      "file": "app/Modules/Education/Ecoles/Models/Teacher.php",
+      "table": "teachers",
+      "description": "Représente un enseignant",
+      "fillable": [
+        "user_id", "school_id", "employee_number", "subjects", "qualification",
+        "experience_years", "status", "archived_at"
+      ],
+      "relations": {
+        "user": "BelongsTo -> User",
+        "school": "BelongsTo -> School",
+        "classes": "HasMany -> SchoolClass (teacher_id)",
+        "schedules": "HasMany -> Schedule (teacher_id)"
+      },
+      "features": [
+        "subjects stocké en JSON array",
+        "Support d'archive (archived_at)",
+        "Qualification et années d'expérience"
+      ]
+    },
+
+    "SchoolClass": {
+      "file": "app/Modules/Education/Ecoles/Models/SchoolClass.php",
+      "table": "school_classes",
+      "description": "Représente une classe d'école",
+      "fillable": [
+        "school_id", "name", "level", "academic_year", "teacher_id",
+        "max_students", "room", "status", "archived_at"
+      ],
+      "relations": {
+        "school": "BelongsTo -> School",
+        "teacher": "BelongsTo -> User (teacher_id)",
+        "students": "HasMany -> Student (class_id)",
+        "schedules": "HasMany -> Schedule (class_id)",
+        "attendances": "HasMany -> Attendance (class_id)",
+        "grades": "HasMany -> Grade (class_id)"
+      },
+      "features": [
+        "Liée à une école et un enseignant",
+        "Peut archiver l'année académique",
+        "Support d'archive (archived_at)"
+      ]
+    },
+
+    "Grade": {
+      "file": "app/Modules/Education/Ecoles/Models/Grade.php",
+      "table": "grades",
+      "description": "Représente une note d'élève",
+      "fillable": [
+        "student_id", "subject", "class_id", "academic_year", "term",
+        "score", "max_score", "grade_letter", "teacher_id", "exam_type", "notes"
+      ],
+      "relations": {
+        "student": "BelongsTo -> Student",
+        "class_": "BelongsTo -> SchoolClass (class_id)",
+        "teacher": "BelongsTo -> User (teacher_id)"
+      },
+      "accessors": [
+        "percentage - Calcule le pourcentage (score/max_score * 100)"
+      ]
+    },
+
+    "Attendance": {
+      "file": "app/Modules/Education/Ecoles/Models/Attendance.php",
+      "table": "attendances",
+      "description": "Enregistrement de présence/absence d'un élève",
+      "fillable": [
+        "student_id", "class_id", "date", "status", "notes", "recorded_by"
+      ],
+      "relations": {
+        "student": "BelongsTo -> Student",
+        "class_": "BelongsTo -> SchoolClass (class_id)",
+        "recorder": "BelongsTo -> User (recorded_by)"
+      },
+      "status_values": ["present", "absent", "late"]
+    },
+
+    "Schedule": {
+      "file": "app/Modules/Education/Ecoles/Models/Schedule.php",
+      "table": "schedules",
+      "description": "Horaire/planning de classe",
+      "fillable": [
+        "class_id", "subject", "teacher_id", "day_of_week", "start_time",
+        "end_time", "room", "color", "archived_at"
+      ],
+      "relations": {
+        "class_": "BelongsTo -> SchoolClass (class_id)",
+        "teacher": "BelongsTo -> User (teacher_id)"
+      },
+      "features": [
+        "Jour de la semaine (day_of_week)",
+        "Heure de début et fin",
+        "Code couleur pour affichage calendrier",
+        "Support d'archive"
+      ]
+    },
+
+    "SchoolTask": {
+      "file": "app/Modules/Education/Ecoles/Models/SchoolTask.php",
+      "table": "school_tasks",
+      "description": "Tâche administrative de l'école",
+      "fillable": [
+        "school_id", "title", "description", "priority", "status",
+        "due_date", "assigned_to", "created_by", "completed_at"
+      ],
+      "relations": {
+        "school": "BelongsTo -> School",
+        "assignee": "BelongsTo -> User (assigned_to)",
+        "creator": "BelongsTo -> User (created_by)"
+      },
+      "status_values": ["todo", "in_progress", "done", "blocked", "cancelled"],
+      "priority_values": ["low", "medium", "high", "urgent"]
+    },
+
+    "SchoolPermissionDelegation": {
+      "file": "app/Modules/Education/Ecoles/Models/SchoolPermissionDelegation.php",
+      "table": "school_permission_delegations",
+      "description": "Délégation de permissions pour un membre de l'école",
+      "fillable": [
+        "school_id", "user_id", "granted_by", "role_name", "permissions",
+        "starts_at", "ends_at", "notes", "revoked_at"
+      ],
+      "relations": {
+        "school": "BelongsTo -> School",
+        "user": "BelongsTo -> User",
+        "grantor": "BelongsTo -> User (granted_by)"
+      },
+      "delegable_permissions": [
+        "school-classes.view", "school-classes.create", "school-classes.update",
+        "school-years.view", "school-years.archive",
+        "students.view", "students.create", "students.update",
+        "teachers.view", "teachers.create", "teachers.update",
+        "attendance.view", "attendance.create",
+        "grades.view", "grades.create", "grades.update",
+        "tasks.view", "tasks.create", "tasks.update"
+      ],
+      "scopes": [
+        "active() - Permissions actuellement actives",
+        "forSchool(schoolId) - Permissions pour une école spécifique"
+      ]
+    }
+  },
+
+  "services": {
+    "SchoolService": {
+      "file": "app/Modules/Education/Ecoles/Services/SchoolService.php",
+      "extends": "BaseService",
+      "repository": "SchoolRepository",
+      "methods": {
+        "list(filters, perPage, user)": "Liste écoles avec filtres et permissions utilisateur",
+        "restore(id)": "Restaurer une école supprimée",
+        "createWithDirector(data)": "Créer école + directeur optionnellement",
+        "levelTypesDescription(levelTypes)": "Description lisible des niveaux"
+      }
+    },
+
+    "StudentService": {
+      "file": "app/Modules/Education/Ecoles/Services/StudentService.php",
+      "extends": "BaseService",
+      "repository": "StudentRepository",
+      "methods": {
+        "listBySchool(schoolId, perPage, academicYear?, includeArchived?)": "Liste élèves par école",
+        "importFromCsv(schoolId, file)": "Import massif d'élèves depuis CSV",
+        "getGrades(studentId)": "Récupère toutes les notes d'un élève",
+        "getBulletin(studentId, period)": "Génère le bulletin par période"
+      },
+      "features": [
+        "Import CSV avec gestion des erreurs",
+        "Création automatique d'utilisateurs pendant import",
+        "Gestion des archives"
+      ]
+    },
+
+    "TeacherService": {
+      "file": "app/Modules/Education/Ecoles/Services/TeacherService.php",
+      "extends": "BaseService",
+      "repository": "TeacherRepository",
+      "methods": {
+        "listBySchool(schoolId, perPage?, academicYear?, includeArchived?)": "Liste enseignants par école",
+        "getSchedule(teacherId)": "Récupère l'emploi du temps d'un enseignant",
+        "getClasses(teacherId)": "Récupère les classes d'un enseignant"
+      }
+    },
+
+    "SchoolClassService": {
+      "file": "app/Modules/Education/Ecoles/Services/SchoolClassService.php",
+      "extends": "BaseService",
+      "repository": "SchoolClassRepository",
+      "methods": {
+        "getBySchool(schoolId, academicYear?, includeArchived?)": "Classes d'une école"
+      }
+    },
+
+    "GradeService": {
+      "file": "app/Modules/Education/Ecoles/Services/GradeService.php",
+      "extends": "BaseService",
+      "repository": "GradeRepository",
+      "methods": {
+        "storeOrUpdate(data)": "Créer ou mettre à jour une note (upsert)",
+        "getByStudent(studentId, term?)": "Notes d'un élève (optionnel par trimestre)",
+        "getByClass(classId, term?)": "Notes d'une classe",
+        "getBulletin(studentId, period)": "Bulletin avec moyenne",
+        "getReport(classId, period)": "Rapport de classe (moyennes, min, max)",
+        "getStats(classId)": "Statistiques (total étudiants, moyenne, taux réussite)"
+      }
+    },
+
+    "AttendanceService": {
+      "file": "app/Modules/Education/Ecoles/Services/AttendanceService.php",
+      "extends": "BaseService",
+      "repository": "AttendanceRepository",
+      "methods": {
+        "record(records)": "Enregistrer présences en batch",
+        "getByClass(classId, date?)": "Présences par classe",
+        "getByStudent(studentId, from?, to?)": "Présences d'un élève (plage dates)",
+        "getReport(studentId)": "Rapport présence avec taux d'assiduité"
+      }
+    },
+
+    "SchoolTaskService": {
+      "file": "app/Modules/Education/Ecoles/Services/SchoolTaskService.php",
+      "extends": "BaseService",
+      "repository": "SchoolTaskRepository",
+      "methods": {
+        "listBySchool(schoolId, filters, perPage)": "Tâches par école avec filtres",
+        "getBySchool(schoolId, taskId)": "Détail d'une tâche"
+      },
+      "filters": ["status", "priority", "assigned_to", "search"]
+    }
+  },
+
+  "repositories": {
+    "SchoolRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/SchoolRepository.php",
+      "extends": "BaseRepository",
+      "model": "School",
+      "methods": {
+        "paginateWithFilters(filters, perPage, user)": "Liste paginée avec filtres et contrôle d'accès (super_admin/admin vs autres rôles)"
+      },
+      "access_control": "super_admin/admin voir toutes, autres voir leurs écoles (director/teacher/student)"
+    },
+
+    "StudentRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/StudentRepository.php",
+      "extends": "BaseRepository",
+      "model": "Student",
+      "methods": {
+        "paginateBySchool(schoolId, perPage, academicYear?, includeArchived?)": "Élèves par école et année académique",
+        "getGrades(studentId)": "Notes d'un élève"
+      }
+    },
+
+    "TeacherRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/TeacherRepository.php",
+      "extends": "BaseRepository",
+      "model": "Teacher",
+      "methods": {
+        "paginateBySchool(schoolId, perPage, academicYear?, includeArchived?)": "Enseignants par école",
+        "getSchedule(teacherId)": "Emploi du temps",
+        "getClasses(teacherId)": "Classes enseignées"
+      }
+    },
+
+    "SchoolClassRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/SchoolClassRepository.php",
+      "extends": "BaseRepository",
+      "model": "SchoolClass",
+      "methods": {
+        "getBySchool(schoolId, academicYear?, includeArchived?)": "Classes avec enseignant"
+      }
+    },
+
+    "GradeRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/GradeRepository.php",
+      "extends": "BaseRepository",
+      "model": "Grade",
+      "methods": {
+        "getByStudent(studentId, period?)": "Notes par étudiant et période",
+        "getByClass(classId, period?)": "Notes par classe (avec relations student/user)",
+        "upsert(data)": "Créer ou mettre à jour basé sur student_id/class_id/subject/academic_year/term"
+      }
+    },
+
+    "AttendanceRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/AttendanceRepository.php",
+      "extends": "BaseRepository",
+      "model": "Attendance",
+      "methods": {
+        "getByClass(classId, date?)": "Présences avec relations student/user",
+        "getByStudent(studentId, from?, to?)": "Présences d'étudiant entre dates",
+        "upsertRecord(data)": "Créer/mettre à jour basé sur student_id/class_id/date"
+      }
+    },
+
+    "SchoolTaskRepository": {
+      "file": "app/Modules/Education/Ecoles/Repositories/SchoolTaskRepository.php",
+      "extends": "BaseRepository",
+      "model": "SchoolTask",
+      "methods": {
+        "paginateBySchool(schoolId, filters, perPage)": "Tâches avec filtres (status, priority, assigned_to, search)",
+        "findBySchool(schoolId, taskId)": "Détail tâche avec relations"
+      }
+    }
+  },
+
+  "database_schema": {
+    "schools": {
+      "columns": [
+        "id: integer, primary key",
+        "name: string",
+        "level_types: json (array)",
+        "address: string",
+        "city: string",
+        "province: string",
+        "phone: string",
+        "email: string",
+        "website: string",
+        "logo: string",
+        "description: text",
+        "director_id: integer, foreign (users.id)",
+        "status: enum (active, inactive)",
+        "created_at: timestamp",
+        "updated_at: timestamp",
+        "deleted_at: timestamp (soft delete)"
+      ],
+      "indexes": ["director_id", "status", "city"],
+      "factory": "SchoolFactory"
+    },
+
+    "students": {
+      "columns": [
+        "id: integer, primary key",
+        "user_id: integer, foreign (users.id)",
+        "school_id: integer, foreign (schools.id)",
+        "class_id: integer, foreign (school_classes.id)",
+        "student_number: string",
+        "enrollment_date: date",
+        "parent_id: integer, foreign (users.id, nullable)",
+        "guardian_name: string",
+        "guardian_phone: string",
+        "guardian_email: string",
+        "status: enum (active, inactive)",
+        "archived_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["user_id", "school_id", "class_id", "parent_id"],
+      "factory": "N/A"
+    },
+
+    "teachers": {
+      "columns": [
+        "id: integer, primary key",
+        "user_id: integer, foreign (users.id)",
+        "school_id: integer, foreign (schools.id)",
+        "employee_number: string",
+        "subjects: json (array)",
+        "qualification: string",
+        "experience_years: integer",
+        "status: enum (active, inactive)",
+        "archived_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["user_id", "school_id"],
+      "factory": "N/A"
+    },
+
+    "school_classes": {
+      "columns": [
+        "id: integer, primary key",
+        "school_id: integer, foreign (schools.id)",
+        "name: string",
+        "level: enum (primaire, secondaire, humanites)",
+        "academic_year: string (ex: 2024-2025)",
+        "teacher_id: integer, foreign (users.id, nullable)",
+        "max_students: integer",
+        "room: string",
+        "status: enum (active, archived)",
+        "archived_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["school_id", "academic_year", "teacher_id"],
+      "factory": "N/A"
+    },
+
+    "grades": {
+      "columns": [
+        "id: integer, primary key",
+        "student_id: integer, foreign (students.id)",
+        "subject: string",
+        "class_id: integer, foreign (school_classes.id)",
+        "academic_year: string",
+        "term: string (ex: Q1, Q2, semester1)",
+        "score: decimal(5,2)",
+        "max_score: decimal(5,2)",
+        "grade_letter: string (A, B, C, D, F)",
+        "teacher_id: integer, foreign (users.id)",
+        "exam_type: enum (homework, quiz, midterm, final, project)",
+        "notes: text",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["student_id", "class_id", "term", "academic_year"],
+      "factory": "N/A"
+    },
+
+    "attendances": {
+      "columns": [
+        "id: integer, primary key",
+        "student_id: integer, foreign (students.id)",
+        "class_id: integer, foreign (school_classes.id)",
+        "date: date",
+        "status: enum (present, absent, late)",
+        "notes: text",
+        "recorded_by: integer, foreign (users.id)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["student_id", "class_id", "date"],
+      "factory": "N/A"
+    },
+
+    "schedules": {
+      "columns": [
+        "id: integer, primary key",
+        "class_id: integer, foreign (school_classes.id)",
+        "subject: string",
+        "teacher_id: integer, foreign (users.id)",
+        "day_of_week: integer (0=Sunday, 6=Saturday)",
+        "start_time: time",
+        "end_time: time",
+        "room: string",
+        "color: string (hex code for UI)",
+        "archived_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["class_id", "teacher_id"],
+      "factory": "N/A"
+    },
+
+    "school_tasks": {
+      "columns": [
+        "id: integer, primary key",
+        "school_id: integer, foreign (schools.id)",
+        "title: string",
+        "description: text",
+        "priority: enum (low, medium, high, urgent)",
+        "status: enum (todo, in_progress, done, blocked, cancelled)",
+        "due_date: date",
+        "assigned_to: integer, foreign (users.id, nullable)",
+        "created_by: integer, foreign (users.id)",
+        "completed_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["school_id", "assigned_to", "status"],
+      "factory": "N/A"
+    },
+
+    "school_permission_delegations": {
+      "columns": [
+        "id: integer, primary key",
+        "school_id: integer, foreign (schools.id)",
+        "user_id: integer, foreign (users.id)",
+        "granted_by: integer, foreign (users.id)",
+        "role_name: string (ex: 'vice-principal', 'coordinator')",
+        "permissions: json (array de permissions)",
+        "starts_at: timestamp",
+        "ends_at: timestamp",
+        "notes: text",
+        "revoked_at: timestamp (nullable)",
+        "created_at: timestamp",
+        "updated_at: timestamp"
+      ],
+      "indexes": ["school_id", "user_id", "revoked_at"],
+      "factory": "N/A"
+    }
+  },
+
+  "key_features": [
+    "Gestion complète des écoles avec directeur et membres",
+    "Gestion des classes par année académique avec archivage",
+    "Suivi des élèves avec notes et présences",
+    "Emploi du temps pour les enseignants et classes",
+    "Système de tâches administratives avec priorités",
+    "Délégation de permissions avec dates de validité",
+    "Contrôle d'accès basé sur les rôles (director, teacher, student)",
+    "Support d'archivage pour les données anciennes",
+    "Import CSV massif d'élèves",
+    "Rapports de présence et bulletins",
+    "Statistiques académiques"
+  ],
+
+  "relations_diagram": {
+    "School": {
+      "1": "has many Students",
+      "1": "has many Teachers",
+      "1": "has many SchoolClasses",
+      "1": "has many SchoolTasks",
+      "1": "has 1 Director (User)"
+    },
+    "SchoolClass": {
+      "1": "has many Students",
+      "1": "has many Schedules",
+      "1": "has many Attendances",
+      "1": "has many Grades",
+      "many": "belong to School",
+      "many": "belong to Teacher (User)"
+    },
+    "Student": {
+      "many": "belong to School",
+      "many": "belong to SchoolClass",
+      "1": "has 1 User",
+      "1": "has many Grades",
+      "1": "has many Attendances",
+      "nullable": "has 1 Parent (User)"
+    },
+    "Teacher": {
+      "many": "belong to School",
+      "1": "has 1 User",
+      "1": "has many SchoolClasses",
+      "1": "has many Schedules"
+    },
+    "Grade": {
+      "many": "belong to Student",
+      "many": "belong to SchoolClass",
+      "many": "belong to Teacher (User)"
+    },
+    "Attendance": {
+      "many": "belong to Student",
+      "many": "belong to SchoolClass",
+      "many": "belong to Recorder (User)"
+    },
+    "Schedule": {
+      "many": "belong to SchoolClass",
+      "many": "belong to Teacher (User)"
+    },
+    "SchoolTask": {
+      "many": "belong to School",
+      "nullable": "belong to Assignee (User)",
+      "many": "belong to Creator (User)"
+    }
+  },
+
+  "request_validation_files": [
+    "AttendanceRequest.php",
+    "GradeRequest.php",
+    "SchoolClassRequest.php",
+    "SchoolRequest.php",
+    "SchoolTaskRequest.php",
+    "StudentRequest.php",
+    "TeacherRequest.php"
+  ],
+
+  "migrations": {
+    "base_migrations": [
+      "2024_01_01_000001_create_schools_table.php",
+      "2024_01_01_000002_create_school_classes_table.php",
+      "2024_01_01_000003_create_students_table.php",
+      "2024_01_01_000004_create_teachers_table.php",
+      "2024_01_01_000005_create_schedules_table.php",
+      "2024_01_01_000006_create_attendances_table.php",
+      "2024_01_01_000007_create_grades_table.php"
+    ]
+  },
+
+  "factories": {
+    "SchoolFactory": "Crée écoles de test",
+    "UserFactory": "Crée utilisateurs de test",
+    "CompanyFactory": "Pour tests d'autres modules",
+    "ProductFactory": "Pour tests d'autres modules",
+    "JobOfferFactory": "Pour tests d'autres modules"
+  },
+
+  "summary": {
+    "total_controllers": 9,
+    "total_models": 9,
+    "total_services": 7,
+    "total_repositories": 7,
+    "main_entities": [
+      "School",
+      "Student",
+      "Teacher",
+      "SchoolClass",
+      "Grade",
+      "Attendance",
+      "Schedule",
+      "SchoolTask",
+      "SchoolPermissionDelegation"
+    ],
+    "access_control": "Role-based (super_admin, admin, school_admin, teacher, student)",
+    "soft_deletes": ["School"],
+    "archivable_entities": [
+      "Student (archived_at)",
+      "Teacher (archived_at)",
+      "SchoolClass (archived_at)",
+      "Schedule (archived_at)"
+    ]
+  }
+}

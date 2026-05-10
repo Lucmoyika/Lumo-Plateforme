@@ -55,7 +55,14 @@ class AuthService extends BaseService
 
     public function logout(User $user): void
     {
-        $user->currentAccessToken()->delete();
+        $currentToken = $user->currentAccessToken();
+
+        if ($currentToken) {
+            $currentToken->delete();
+        } else {
+            $user->tokens()->where('name', 'auth_token')->delete();
+        }
+
         $this->auditLog($user->id, 'logout', User::class, $user->id);
     }
 

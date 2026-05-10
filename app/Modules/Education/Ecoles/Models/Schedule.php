@@ -17,7 +17,15 @@ class Schedule extends Model
         'end_time',
         'room',
         'color',
+        'archived_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'archived_at' => 'datetime',
+        ];
+    }
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

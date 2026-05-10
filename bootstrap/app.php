@@ -12,9 +12,22 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(replace: [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class => \App\Http\Middleware\EncryptCookies::class,
+        ]);
+
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->append(\App\Http\Middleware\AuditLogMiddleware::class);
         $middleware->append(\App\Http\Middleware\SetLocale::class);
+        $middleware->alias([
+            'token.auth' => \App\Http\Middleware\EnsureTokenRole::class,
+            'token.role' => \App\Http\Middleware\EnsureTokenRole::class,
+            'token.permission' => \App\Http\Middleware\EnsureTokenPermission::class,
+            'token.school_scope' => \App\Http\Middleware\EnsureSchoolScope::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             UserSeeder::class,
             SchoolSeeder::class,
+            // Décommenter pour tester le module écoles:
+            // SchoolTestUsersSeeder::class,
         ]);
     }
 }

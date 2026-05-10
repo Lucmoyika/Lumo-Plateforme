@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Modules\Communication\Models\Message;
 use App\Modules\Entreprises\Models\Company;
 use App\Modules\Education\Ecoles\Models\School;
+use App\Modules\Education\Ecoles\Models\SchoolPermissionDelegation;
 use App\Modules\Education\Ecoles\Models\Student;
 use App\Modules\Education\Ecoles\Models\Teacher;
 use App\Modules\Education\Universites\Models\UniversityStudent;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -93,6 +95,35 @@ class User extends Authenticatable
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function schoolPermissionDelegations(): HasMany
+    {
+        return $this->hasMany(SchoolPermissionDelegation::class);
+    }
+
+    public function activeSchoolPermissions(int $schoolId): Collection
+    {
+        return $this->schoolPermissionDelegations()
+            ->active()
+            ->forSchool($schoolId)
+            ->get()
+            ->flatMap(fn (SchoolPermissionDelegation $delegation) => $delegation->permissions ?? [])
+            ->unique()
+            ->values();
+    }
+
+    public function hasActiveSchoolDelegation(int $schoolId): bool
+    {
+        return $this->schoolPermissionDelegations()
+            ->active()
+            ->forSchool($schoolId)
+            ->exists();
+    }
+
+    public function hasActiveSchoolPermission(string $permission, int $schoolId): bool
+    {
+        return $this->activeSchoolPermissions($schoolId)->contains($permission);
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

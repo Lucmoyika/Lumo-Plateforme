@@ -10,8 +10,10 @@ use App\Modules\Core\Requests\RegisterRequest;
 use App\Modules\Core\Requests\ResetPasswordRequest;
 use App\Modules\Core\Requests\UpdateProfileRequest;
 use App\Modules\Core\Services\AuthService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
@@ -43,7 +45,20 @@ class AuthController extends Controller
                 $request->validated('password')
             );
 
-            return $this->successResponse($result, 'Connexion réussie.');
+            $result['user'] = $result['user']->load(['roles.permissions', 'permissions']);
+
+            return $this->successResponse($result, 'Connexion réussie.')
+                ->withCookie(cookie(
+                    'lumo_token',
+                    $result['token'],
+                    60 * 24 * 7,
+                    '/',
+                    null,
+                    $request->isSecure(),
+                    true,
+                    false,
+                    'lax'
+                ));
         } catch (\InvalidArgumentException $e) {
             return $this->errorResponse($e->getMessage(), [], 401);
         } catch (\Throwable $e) {
@@ -56,9 +71,19 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $this->authService->logout($request->user());
+        if ($request->user()) {
+            $this->authService->logout($request->user());
+        }
 
-        return $this->successResponse(null, 'Déconnexion réussie.');
+        Auth::logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return $this->successResponse(null, 'Déconnexion réussie.')
+            ->withCookie(Cookie::forget('lumo_token'));
     }
 
     /**
@@ -66,7 +91,7 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        return $this->successResponse($request->user()->load(['wallet']), 'Utilisateur récupéré.');
+        return $this->successResponse($request->user()->load(['wallet', 'roles.permissions', 'permissions', 'school']), 'Utilisateur récupéré.');
     }
 
     /**

@@ -18,7 +18,7 @@ class GradeRepository extends BaseRepository
         $query = $this->model->where('student_id', $studentId);
 
         if ($period) {
-            $query->where('period', $period);
+            $query->where('term', $period);
         }
 
         return $query->orderBy('subject')->get();
@@ -29,7 +29,7 @@ class GradeRepository extends BaseRepository
         $query = $this->model->where('class_id', $classId);
 
         if ($period) {
-            $query->where('period', $period);
+            $query->where('term', $period);
         }
 
         return $query->with(['student.user'])->get();
@@ -40,8 +40,10 @@ class GradeRepository extends BaseRepository
         return $this->model->updateOrCreate(
             [
                 'student_id' => $data['student_id'],
+                'class_id'   => $data['class_id'],
                 'subject'    => $data['subject'],
-                'period'     => $data['period'],
+                'academic_year' => $data['academic_year'],
+                'term'       => $data['term'],
             ],
             $data
         );

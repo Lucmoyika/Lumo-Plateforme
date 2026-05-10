@@ -11,7 +11,7 @@ class SchoolFactory extends Factory
 
     public function definition(): array
     {
-        $types = ['primary', 'middle', 'secondary', 'technical'];
+        $types = ['maternelle', 'primaire', 'secondaire', 'humanites'];
         $cities = ['Abidjan', 'Dakar', 'Lomé', 'Cotonou', 'Ouagadougou', 'Kinshasa', 'Nairobi', 'Lagos', 'Accra'];
 
         return [

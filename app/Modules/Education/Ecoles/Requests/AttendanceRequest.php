@@ -19,7 +19,23 @@ class AttendanceRequest extends FormRequest
             'records.*.class_id'   => ['required', 'exists:school_classes,id'],
             'records.*.date'       => ['required', 'date'],
             'records.*.status'     => ['required', 'string', 'in:present,absent,late,excused'],
-            'records.*.note'       => ['nullable', 'string', 'max:255'],
+            'records.*.notes'      => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $records = collect($this->input('records', []))
+            ->map(function ($record) {
+                if (is_array($record) && !isset($record['notes']) && isset($record['note'])) {
+                    $record['notes'] = $record['note'];
+                }
+
+                return $record;
+            })
+            ->values()
+            ->all();
+
+        $this->merge(['records' => $records]);
     }
 }

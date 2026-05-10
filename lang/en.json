@@ -1,0 +1,55 @@
+{
+  "🏢 Mon école": "🏢 My school",
+  "🏫 Écoles": "🏫 Schools",
+  "🎓 Universités": "🎓 Universities",
+  "💼 Emplois": "💼 Jobs",
+  "🏢 Entreprises": "🏢 Companies",
+  "🛒 Boutique": "🛒 Shop",
+  "💬 Chat": "💬 Chat",
+  "💳 Wallet": "💳 Wallet",
+  "🎥 Vidéos": "🎥 Videos",
+  "🚚 Logistique": "🚚 Logistics",
+  "📊 Analytique": "📊 Analytics",
+  "⚙️ Admin": "⚙️ Admin",
+  "🔔 Notifications": "🔔 Notifications",
+  "👤 Profil": "👤 Profile",
+  "⚙️ Paramètres": "⚙️ Settings",
+  "↪️ Déconnexion": "↪️ Logout",
+  "Notifications": "Notifications",
+  "Voir tout": "See all",
+  "Il y a 5 min": "5 min ago",
+  "Il y a 1h": "1h ago",
+  "Il y a 3h": "3h ago",
+  "Connexion": "Login",
+  "Profil": "Profile",
+  "Déconnexion": "Logout",
+  "© :year Lumo Plateforme — Éducation, Emploi, Commerce pour l'Afrique 🌍": "© :year Lumo Platform — Education, Jobs, Commerce for Africa 🌍",
+  "Aucun changement à sauvegarder.": "No changes to save.",
+  "Paramètres sauvegardés.": "Settings saved.",
+  "Impossible de sauvegarder": "Unable to save",
+  "Impossible de charger les paramètres": "Unable to load settings",
+  "Chargement des paramètres...": "Loading settings...",
+  "Sauvegarder": "Save",
+  "Sauvegarde...": "Saving...",
+  "Dernière sauvegarde: :date": "Last saved: :date"
+  ,"🌐 Général": "🌐 General"
+  ,"🔒 Confidentialité": "🔒 Privacy"
+  ,"🎨 Apparence": "🎨 Appearance"
+  ,"Paramètres généraux": "General settings"
+  ,"Langue": "Language"
+  ,"Français": "French"
+  ,"Fuseau horaire": "Timezone"
+  ,"Devise": "Currency"
+  ,"Préférences de notifications": "Notification preferences"
+  ,"Notifications par email": "Email notifications"
+  ,"Notifications push": "Push notifications"
+  ,"Alertes SMS": "SMS alerts"
+  ,"Résumé hebdomadaire": "Weekly summary"
+  ,"Confidentialité": "Privacy"
+  ,"Profil public": "Public profile"
+  ,"Afficher les activités": "Show activity"
+  ,"Partager les statistiques": "Share statistics"
+  ,"Apparence": "Appearance"
+  ,"Mode sombre": "Dark mode"
+  ,"Dernière sauvegarde": "Last saved"
+}

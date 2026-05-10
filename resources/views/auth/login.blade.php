@@ -10,12 +10,42 @@
         loading = true; error = '';
         fetch('/api/auth/login', {
             method: 'POST',
-            headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content},
-            body: JSON.stringify({email: $refs.email.value, password: $refs.password.value})
-        }).then(r => r.json()).then(d => {
-            if(d.success) { localStorage.setItem('token', d.data.token); window.location='/dashboard'; }
-            else { error = d.message || 'Identifiants invalides'; loading = false; }
-        }).catch(() => { error = 'Erreur réseau'; loading = false; });
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type':'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+            },
+            body: JSON.stringify({
+                email: ($refs.email.value || '').trim().toLowerCase(),
+                password: ($refs.password.value || '').trim()
+            })
+        }).then(async (response) => {
+            const raw = await response.text();
+            let data = null;
+
+            try {
+                data = raw ? JSON.parse(raw) : null;
+            } catch (_) {
+                throw new Error(raw || 'Réponse inattendue du serveur');
+            }
+
+            if (!response.ok || !data?.success) {
+                throw new Error(data?.message || 'Identifiants invalides');
+            }
+
+            return data;
+        }).then(d => {
+            localStorage.setItem('token', d.data.token);
+            if (d.data.user) {
+                localStorage.setItem('user', JSON.stringify(d.data.user));
+            }
+
+            window.location = '/dashboard';
+        }).catch((err) => {
+            error = err?.message || 'Erreur réseau';
+            loading = false;
+        });
     " class="space-y-4">
         <div x-show="error" class="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm" x-text="error"></div>
 

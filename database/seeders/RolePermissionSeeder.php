@@ -15,11 +15,16 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             // Schools
             'schools.view', 'schools.create', 'schools.update', 'schools.delete',
+            'schools.delegate',
             'school-classes.view', 'school-classes.create', 'school-classes.update', 'school-classes.delete',
+            'school-years.view', 'school-years.archive', 'school-years.restore',
             'students.view', 'students.create', 'students.update', 'students.delete',
             'teachers.view', 'teachers.create', 'teachers.update', 'teachers.delete',
             'attendance.view', 'attendance.create', 'attendance.update',
             'grades.view', 'grades.create', 'grades.update', 'grades.delete',
+            'schedule.view', 'schedule.create', 'schedule.update',
+            'permission-delegation.create', 'permission-delegation.revoke',
+            'tasks.view', 'tasks.create', 'tasks.update', 'tasks.delete',
             // Universities
             'universities.view', 'universities.create', 'universities.update', 'universities.delete',
             'faculties.view', 'faculties.create', 'faculties.update', 'faculties.delete',
@@ -52,22 +57,26 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
         $roles = [
-            'super_admin'      => array_keys(array_flip($permissions)),
-            'admin'            => array_diff($permissions, ['users.delete']),
-            'school_admin'     => ['schools.view', 'schools.create', 'schools.update', 'school-classes.view', 'school-classes.create', 'school-classes.update', 'students.view', 'students.create', 'students.update', 'teachers.view', 'teachers.create', 'teachers.update', 'attendance.view', 'attendance.create', 'grades.view', 'grades.create', 'grades.update'],
-            'university_admin' => ['universities.view', 'universities.create', 'universities.update', 'faculties.view', 'faculties.create', 'departments.view', 'departments.create', 'courses.view', 'courses.create', 'theses.view', 'theses.create'],
-            'company_admin'    => ['companies.view', 'companies.create', 'companies.update', 'jobs.view', 'jobs.create', 'jobs.update', 'job-applications.view'],
-            'teacher'          => ['schools.view', 'students.view', 'attendance.view', 'attendance.create', 'grades.view', 'grades.create', 'grades.update', 'videos.view'],
-            'student'          => ['schools.view', 'grades.view', 'attendance.view', 'videos.view', 'jobs.view', 'products.view', 'conversations.view', 'conversations.create', 'messages.view', 'messages.create'],
-            'customer'         => ['products.view', 'orders.view', 'orders.create', 'payments.view', 'payments.create', 'wallet.view', 'wallet.deposit', 'wallet.withdraw', 'wallet.transfer', 'conversations.view', 'conversations.create', 'messages.view', 'messages.create'],
+            'super_admin'         => array_keys(array_flip($permissions)),
+            'admin'               => array_diff($permissions, ['users.delete']),
+            'school_admin'        => ['schools.view', 'schools.update', 'schools.delegate', 'school-classes.view', 'school-classes.create', 'school-classes.update', 'school-classes.delete', 'school-years.view', 'school-years.archive', 'school-years.restore', 'students.view', 'students.create', 'students.update', 'students.delete', 'teachers.view', 'teachers.create', 'teachers.update', 'teachers.delete', 'attendance.view', 'attendance.create', 'attendance.update', 'grades.view', 'grades.create', 'grades.update', 'grades.delete', 'schedule.view', 'schedule.create', 'schedule.update', 'permission-delegation.create', 'permission-delegation.revoke', 'tasks.view', 'tasks.create', 'tasks.update', 'tasks.delete'],
+            'school_staff'        => ['schools.view', 'school-classes.view', 'school-years.view', 'students.view', 'students.create', 'students.update', 'teachers.view', 'attendance.view', 'attendance.create', 'attendance.update', 'grades.view', 'tasks.view', 'tasks.update', 'messages.view', 'messages.create'],
+            'teacher'             => ['schools.view', 'school-classes.view', 'school-years.view', 'students.view', 'attendance.view', 'attendance.create', 'attendance.update', 'grades.view', 'grades.create', 'grades.update', 'schedule.view', 'schedule.update', 'tasks.view', 'tasks.update', 'videos.view', 'conversations.view', 'conversations.create', 'messages.view', 'messages.create'],
+            'substitute_teacher'  => ['schools.view', 'school-classes.view', 'school-years.view', 'students.view', 'attendance.view', 'attendance.create', 'grades.view', 'grades.create', 'grades.update', 'tasks.view', 'videos.view', 'messages.view', 'messages.create'],
+            'assistant'           => ['schools.view', 'school-classes.view', 'school-years.view', 'students.view', 'students.create', 'students.update', 'teachers.view', 'attendance.view', 'attendance.create', 'attendance.update', 'grades.view', 'tasks.view', 'tasks.create', 'tasks.update', 'messages.view', 'messages.create'],
+            'student'             => ['schools.view', 'grades.view', 'attendance.view', 'tasks.view', 'tasks.update', 'videos.view', 'conversations.view', 'conversations.create', 'messages.view', 'messages.create'],
+            'parent'              => ['schools.view', 'grades.view', 'attendance.view', 'messages.view', 'messages.create', 'conversations.view', 'conversations.create'],
+            'university_admin'    => ['universities.view', 'universities.create', 'universities.update', 'faculties.view', 'faculties.create', 'departments.view', 'departments.create', 'courses.view', 'courses.create', 'theses.view', 'theses.create'],
+            'company_admin'       => ['companies.view', 'companies.create', 'companies.update', 'jobs.view', 'jobs.create', 'jobs.update', 'job-applications.view'],
+            'customer'            => ['products.view', 'orders.view', 'orders.create', 'payments.view', 'payments.create', 'wallet.view', 'wallet.deposit', 'wallet.withdraw', 'wallet.transfer', 'conversations.view', 'conversations.create', 'messages.view', 'messages.create'],
         ];
 
         foreach ($roles as $roleName => $rolePermissions) {
-            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
             $role->syncPermissions($rolePermissions);
         }
     }

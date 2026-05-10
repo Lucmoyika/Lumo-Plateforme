@@ -1,5 +1,5 @@
-const CACHE_NAME = 'lumo-v1';
-const STATIC_ASSETS = ['/', '/manifest.json'];
+const CACHE_NAME = 'lumo-v2';
+const STATIC_ASSETS = ['/manifest.json'];
 
 self.addEventListener('install', event => {
     event.waitUntil(
@@ -18,13 +18,39 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+    const request = event.request;
+
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request)
+                .then(response => {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(request, responseClone));
+                    return response;
+                })
+                .catch(() => caches.match(request).then(cached => cached || caches.match('/')))
+        );
+
+        return;
+    }
+
     if (event.request.url.includes('/api/')) {
         event.respondWith(
             fetch(event.request).catch(() => caches.match(event.request))
         );
     } else {
         event.respondWith(
-            caches.match(event.request).then(response => response || fetch(event.request))
+            caches.match(event.request).then(response => {
+                if (response) {
+                    return response;
+                }
+
+                return fetch(event.request).then(networkResponse => {
+                    const clone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                    return networkResponse;
+                });
+            })
         );
     }
 });

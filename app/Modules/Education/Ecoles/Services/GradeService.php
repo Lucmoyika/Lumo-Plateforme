@@ -18,10 +18,20 @@ class GradeService extends BaseService
         return $this->gradeRepository->upsert($data);
     }
 
+    public function getByStudent(int $studentId, ?string $term = null): Collection
+    {
+        return $this->gradeRepository->getByStudent($studentId, $term);
+    }
+
+    public function getByClass(int $classId, ?string $term = null): Collection
+    {
+        return $this->gradeRepository->getByClass($classId, $term);
+    }
+
     public function getBulletin(int $studentId, string $period): array
     {
         $grades  = $this->gradeRepository->getByStudent($studentId, $period);
-        $average = $grades->avg('value') ?? 0;
+        $average = $grades->avg('score') ?? 0;
 
         return [
             'grades'  => $grades,
@@ -37,9 +47,9 @@ class GradeService extends BaseService
 
         return [
             'grades'      => $grades,
-            'class_avg'   => round($grades->avg('value') ?? 0, 2),
-            'highest'     => $grades->max('value'),
-            'lowest'      => $grades->min('value'),
+            'class_avg'   => round($grades->avg('score') ?? 0, 2),
+            'highest'     => $grades->max('score'),
+            'lowest'      => $grades->min('score'),
         ];
     }
 
@@ -49,9 +59,9 @@ class GradeService extends BaseService
 
         return [
             'total_students' => $grades->pluck('student_id')->unique()->count(),
-            'average'        => round($grades->avg('value') ?? 0, 2),
+            'average'        => round($grades->avg('score') ?? 0, 2),
             'pass_rate'      => $grades->count() > 0
-                ? round($grades->where('value', '>=', 10)->count() / $grades->count() * 100, 2)
+                ? round($grades->where('score', '>=', 10)->count() / $grades->count() * 100, 2)
                 : 0,
         ];
     }

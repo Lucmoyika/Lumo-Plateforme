@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('schools', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ['maternelle', 'primaire', 'secondaire', 'humanites']);
+            $table->json('level_types')->default('[]')->comment('Array of school levels: primaire, secondaire, humanites (schools can have multiple)');
             $table->string('address')->nullable();
             $table->string('city')->nullable();
             $table->string('province')->nullable();

@@ -20,7 +20,15 @@ class Student extends Model
         'guardian_phone',
         'guardian_email',
         'status',
+        'archived_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'archived_at' => 'datetime',
+        ];
+    }
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

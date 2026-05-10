@@ -19,6 +19,17 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $email = $this->input('email');
+        $password = $this->input('password');
+
+        $this->merge([
+            'email' => is_string($email) ? mb_strtolower(trim($email)) : $email,
+            'password' => is_string($password) ? trim($password) : $password,
+        ]);
+    }
+
     public function messages(): array
     {
         return [

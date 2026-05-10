@@ -18,9 +18,9 @@ class StudentService extends BaseService
         parent::__construct($studentRepository);
     }
 
-    public function listBySchool(int $schoolId, int $perPage = 15): LengthAwarePaginator
+    public function listBySchool(int $schoolId, int $perPage = 15, ?string $academicYear = null, bool $includeArchived = false): LengthAwarePaginator
     {
-        return $this->studentRepository->paginateBySchool($schoolId, $perPage);
+        return $this->studentRepository->paginateBySchool($schoolId, $perPage, $academicYear, $includeArchived);
     }
 
     public function importFromCsv(int $schoolId, UploadedFile $file): array
@@ -79,8 +79,8 @@ class StudentService extends BaseService
     {
         $grades = $this->studentRepository->getGrades($studentId);
 
-        $periodGrades = $grades->where('period', $period)->values();
-        $average      = $periodGrades->avg('value') ?? 0;
+        $periodGrades = $grades->where('term', $period)->values();
+        $average      = $periodGrades->avg('score') ?? 0;
 
         return [
             'student' => $this->studentRepository->find($studentId, ['*'], ['user']),
